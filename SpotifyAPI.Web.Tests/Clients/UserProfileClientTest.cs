@@ -16,7 +16,7 @@ namespace SpotifyAPI.Web
 
       await client.Current();
 
-      api.Verify(a => a.Get<PrivateUser>(SpotifyUrls.Me()), Times.Once);
+      api.Verify(a => a.Get<PrivateUser>(SpotifyUrls.Me(), null), Times.Once);
     }
 
     [Test]
@@ -28,7 +28,7 @@ namespace SpotifyAPI.Web
 
       await client.Get(userId);
 
-      api.Verify(a => a.Get<PublicUser>(SpotifyUrls.User(userId)), Times.Once);
+      api.Verify(a => a.Get<PublicUser>(SpotifyUrls.User(userId), null), Times.Once);
     }
   }
 }

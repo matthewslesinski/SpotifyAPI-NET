@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using SpotifyAPI.Web.Http;
 
@@ -47,14 +48,14 @@ namespace SpotifyAPI.Web
     /// <value></value>
     public AuthorizationCodeTokenResponse InitialToken { get; }
 
-    public async Task Apply(IRequest request, IAPIConnector apiConnector)
+    public async Task Apply(IRequest request, IAPIConnector apiConnector, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(request, nameof(request));
 
       if (InitialToken.IsExpired)
       {
         AuthorizationCodeRefreshRequest? tokenRequest = new(ClientId, ClientSecret, InitialToken.RefreshToken);
-        AuthorizationCodeRefreshResponse? refreshedToken = await OAuthClient.RequestToken(tokenRequest, apiConnector).ConfigureAwait(false);
+        AuthorizationCodeRefreshResponse? refreshedToken = await OAuthClient.RequestToken(tokenRequest, apiConnector, cancellationToken).ConfigureAwait(false);
 
         InitialToken.AccessToken = refreshedToken.AccessToken;
         InitialToken.CreatedAt = refreshedToken.CreatedAt;

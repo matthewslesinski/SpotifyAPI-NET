@@ -19,7 +19,7 @@ namespace SpotifyAPI.Web.Tests
       await client.GetRecommendationGenres();
 
       api.Verify(a => a.Get<RecommendationGenresResponse>(
-        It.Is<Uri>((uri) => uri.ToString().Contains("recommendations/available-genre-seeds"))
+        It.Is<Uri>((uri) => uri.ToString().Contains("recommendations/available-genre-seeds")), null
       ));
     }
   }

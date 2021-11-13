@@ -20,7 +20,7 @@ namespace SpotifyAPI.Web.Tests
 
       api.Verify(a => a.Get<FollowedArtistsResponse>(
         SpotifyUrls.CurrentUserFollower(),
-        It.Is<Dictionary<string, string>>(val => val.ContainsKey("type"))
+        It.Is<Dictionary<string, string>>(val => val.ContainsKey("type")), null
       ));
     }
   }

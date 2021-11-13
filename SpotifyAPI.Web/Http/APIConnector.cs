@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net;
+using System.Threading;
 
 namespace SpotifyAPI.Web.Http
 {
@@ -36,133 +37,174 @@ namespace SpotifyAPI.Web.Http
       _httpLogger = httpLogger;
     }
 
-    public Task<T> Delete<T>(Uri uri)
+    public Task<T> Delete<T>(Uri uri, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Delete);
+      return SendAPIRequest<T>(uri, HttpMethod.Delete, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Delete<T>(Uri uri, IDictionary<string, string>? parameters)
+    public Task<T> Delete<T>(Uri uri, IDictionary<string, string>? parameters, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Delete, parameters);
+      return SendAPIRequest<T>(uri, HttpMethod.Delete, parameters, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Delete<T>(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public Task<T> Delete<T>(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Delete, parameters, body);
+      return SendAPIRequest<T>(uri, HttpMethod.Delete, parameters, body, cancellationToken: cancellationToken);
     }
 
-    public async Task<HttpStatusCode> Delete(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public async Task<HttpStatusCode> Delete(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      var response = await SendAPIRequestDetailed(uri, HttpMethod.Delete, parameters, body).ConfigureAwait(false);
+      var response = await SendAPIRequestDetailed(uri, HttpMethod.Delete, parameters, body, cancellationToken: cancellationToken).ConfigureAwait(false);
       return response.StatusCode;
     }
 
-    public Task<T> Get<T>(Uri uri)
+    public Task<T> Get<T>(Uri uri, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Get);
+      return SendAPIRequest<T>(uri, HttpMethod.Get, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Get<T>(Uri uri, IDictionary<string, string>? parameters)
+    public Task<T> Get<T>(Uri uri, IDictionary<string, string>? parameters, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Get, parameters);
+      return SendAPIRequest<T>(uri, HttpMethod.Get, parameters, cancellationToken: cancellationToken);
     }
 
-    public async Task<HttpStatusCode> Get(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public async Task<HttpStatusCode> Get(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      var response = await SendAPIRequestDetailed(uri, HttpMethod.Get, parameters, body).ConfigureAwait(false);
+      var response = await SendAPIRequestDetailed(uri, HttpMethod.Get, parameters, body, cancellationToken: cancellationToken).ConfigureAwait(false);
       return response.StatusCode;
     }
 
-    public Task<T> Post<T>(Uri uri)
+    public Task<T> Post<T>(Uri uri, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Post);
+      return SendAPIRequest<T>(uri, HttpMethod.Post, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters)
+    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters);
+      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters, body);
+      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters, body, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters, object? body, Dictionary<string, string>? headers)
+    public Task<T> Post<T>(Uri uri, IDictionary<string, string>? parameters, object? body, Dictionary<string, string>? headers, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters, body, headers);
+      return SendAPIRequest<T>(uri, HttpMethod.Post, parameters, body, headers, cancellationToken: cancellationToken);
     }
 
-    public async Task<HttpStatusCode> Post(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public async Task<HttpStatusCode> Post(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      var response = await SendAPIRequestDetailed(uri, HttpMethod.Post, parameters, body).ConfigureAwait(false);
+      var response = await SendAPIRequestDetailed(uri, HttpMethod.Post, parameters, body, cancellationToken: cancellationToken).ConfigureAwait(false);
       return response.StatusCode;
     }
 
-    public Task<T> Put<T>(Uri uri)
+    public Task<T> Put<T>(Uri uri, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Put);
+      return SendAPIRequest<T>(uri, HttpMethod.Put, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Put<T>(Uri uri, IDictionary<string, string>? parameters)
+    public Task<T> Put<T>(Uri uri, IDictionary<string, string>? parameters, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Put, parameters);
+      return SendAPIRequest<T>(uri, HttpMethod.Put, parameters, cancellationToken: cancellationToken);
     }
 
-    public Task<T> Put<T>(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public Task<T> Put<T>(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      return SendAPIRequest<T>(uri, HttpMethod.Put, parameters, body);
+      return SendAPIRequest<T>(uri, HttpMethod.Put, parameters, body, cancellationToken: cancellationToken);
     }
 
-    public async Task<HttpStatusCode> Put(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public async Task<HttpStatusCode> Put(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      var response = await SendAPIRequestDetailed(uri, HttpMethod.Put, parameters, body).ConfigureAwait(false);
+      var response = await SendAPIRequestDetailed(uri, HttpMethod.Put, parameters, body, cancellationToken: cancellationToken).ConfigureAwait(false);
       return response.StatusCode;
     }
 
-    public async Task<HttpStatusCode> PutRaw(Uri uri, IDictionary<string, string>? parameters, object? body)
+    public async Task<HttpStatusCode> PutRaw(Uri uri, IDictionary<string, string>? parameters, object? body, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(uri, nameof(uri));
 
-      var response = await SendRawRequest(uri, HttpMethod.Put, parameters, body).ConfigureAwait(false);
+      var response = await SendRawRequest(uri, HttpMethod.Put, parameters, body, cancellationToken: cancellationToken).ConfigureAwait(false);
       return response.StatusCode;
     }
 
     public void SetRequestTimeout(TimeSpan timeout)
     {
       _httpClient.SetRequestTimeout(timeout);
+    }
+
+    public Task<IResponse> SendRawRequest(
+        Uri uri,
+        HttpMethod method,
+        IDictionary<string, string>? parameters = null,
+        object? body = null,
+        IDictionary<string, string>? headers = null,
+        CancellationToken? cancellationToken = null
+      )
+    {
+      var request = CreateRequest(uri, method, parameters, body, headers);
+      return DoRequest(request, cancellationToken);
+    }
+
+    public async Task<T> SendAPIRequest<T>(
+        Uri uri,
+        HttpMethod method,
+        IDictionary<string, string>? parameters = null,
+        object? body = null,
+        IDictionary<string, string>? headers = null,
+        CancellationToken? cancellationToken = null
+      )
+    {
+      var request = CreateRequest(uri, method, parameters, body, headers);
+      IAPIResponse<T> apiResponse = await DoSerializedRequest<T>(request, cancellationToken).ConfigureAwait(false);
+      return apiResponse.Body!;
+    }
+
+    public async Task<IResponse> SendAPIRequestDetailed(
+        Uri uri,
+        HttpMethod method,
+        IDictionary<string, string>? parameters = null,
+        object? body = null,
+        IDictionary<string, string>? headers = null,
+        CancellationToken? cancellationToken = null
+      )
+    {
+      var request = CreateRequest(uri, method, parameters, body, headers);
+      var response = await DoSerializedRequest<object>(request, cancellationToken).ConfigureAwait(false);
+      return response.Response;
     }
 
     private IRequest CreateRequest(
@@ -187,36 +229,36 @@ namespace SpotifyAPI.Web.Http
       };
     }
 
-    private async Task<IAPIResponse<T>> DoSerializedRequest<T>(IRequest request)
+    private async Task<IAPIResponse<T>> DoSerializedRequest<T>(IRequest request, CancellationToken? cancellationToken)
     {
       _jsonSerializer.SerializeRequest(request);
-      var response = await DoRequest(request).ConfigureAwait(false);
+      var response = await DoRequest(request, cancellationToken).ConfigureAwait(false);
       return _jsonSerializer.DeserializeResponse<T>(response);
     }
 
-    private async Task<IResponse> DoRequest(IRequest request)
+    protected virtual async Task<IResponse> DoRequest(IRequest request, CancellationToken? cancellationToken)
     {
-      await ApplyAuthenticator(request).ConfigureAwait(false);
-      _httpLogger?.OnRequest(request);
-      IResponse response = await _httpClient.DoRequest(request).ConfigureAwait(false);
-      _httpLogger?.OnResponse(response);
-      ResponseReceived?.Invoke(this, response);
+      var response = await SendRequest(request, cancellationToken).ConfigureAwait(false);
       if (_retryHandler != null)
       {
-        response = await _retryHandler.HandleRetry(request, response, async (newRequest) =>
-        {
-          await ApplyAuthenticator(request).ConfigureAwait(false);
-          var newResponse = await _httpClient.DoRequest(request).ConfigureAwait(false);
-          _httpLogger?.OnResponse(newResponse);
-          ResponseReceived?.Invoke(this, response);
-          return newResponse;
-        }).ConfigureAwait(false);
+        response = await _retryHandler.HandleRetry(request, response, (newRequest) => SendRequest(request, cancellationToken)).ConfigureAwait(false);
       }
+
       ProcessErrors(response);
       return response;
     }
 
-    private async Task ApplyAuthenticator(IRequest request)
+    private async Task<IResponse> SendRequest(IRequest request, CancellationToken? cancellationToken)
+    {
+      await ApplyAuthenticator(request, cancellationToken).ConfigureAwait(false);
+      _httpLogger?.OnRequest(request);
+      IResponse response = await _httpClient.DoRequest(request, cancellationToken).ConfigureAwait(false);
+      _httpLogger?.OnResponse(response);
+      ResponseReceived?.Invoke(this, response);
+      return response;
+    }
+
+    private async Task ApplyAuthenticator(IRequest request, CancellationToken? cancellationToken)
     {
 #if NETSTANDARD2_0
       if (_authenticator != null
@@ -228,46 +270,8 @@ namespace SpotifyAPI.Web.Http
         || request.Endpoint.AbsoluteUri.Contains("https://api.spotify.com", StringComparison.InvariantCulture))
 #endif
       {
-        await _authenticator!.Apply(request, this).ConfigureAwait(false);
+        await _authenticator!.Apply(request, this, cancellationToken).ConfigureAwait(false);
       }
-    }
-
-    public Task<IResponse> SendRawRequest(
-        Uri uri,
-        HttpMethod method,
-        IDictionary<string, string>? parameters = null,
-        object? body = null,
-        IDictionary<string, string>? headers = null
-      )
-    {
-      var request = CreateRequest(uri, method, parameters, body, headers);
-      return DoRequest(request);
-    }
-
-    public async Task<T> SendAPIRequest<T>(
-        Uri uri,
-        HttpMethod method,
-        IDictionary<string, string>? parameters = null,
-        object? body = null,
-        IDictionary<string, string>? headers = null
-      )
-    {
-      var request = CreateRequest(uri, method, parameters, body, headers);
-      IAPIResponse<T> apiResponse = await DoSerializedRequest<T>(request).ConfigureAwait(false);
-      return apiResponse.Body!;
-    }
-
-    public async Task<IResponse> SendAPIRequestDetailed(
-        Uri uri,
-        HttpMethod method,
-        IDictionary<string, string>? parameters = null,
-        object? body = null,
-        IDictionary<string, string>? headers = null
-      )
-    {
-      var request = CreateRequest(uri, method, parameters, body, headers);
-      var response = await DoSerializedRequest<object>(request).ConfigureAwait(false);
-      return response.Response;
     }
 
     private static void ProcessErrors(IResponse response)

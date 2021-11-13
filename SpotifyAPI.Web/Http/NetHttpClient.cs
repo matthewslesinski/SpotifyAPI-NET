@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SpotifyAPI.Web.Http
 {
@@ -31,13 +32,15 @@ namespace SpotifyAPI.Web.Http
       _httpClient = new HttpClient(_httpMessageHandler);
     }
 
-    public async Task<IResponse> DoRequest(IRequest request)
+    public async Task<IResponse> DoRequest(IRequest request, CancellationToken? cancel = null)
     {
       Ensure.ArgumentNotNull(request, nameof(request));
+      Task<HttpResponseMessage> SendAction(HttpRequestMessage msg) => cancel.HasValue
+          ? _httpClient.SendAsync(msg, HttpCompletionOption.ResponseContentRead, cancel.Value)
+          : _httpClient.SendAsync(msg, HttpCompletionOption.ResponseContentRead);
 
       using HttpRequestMessage requestMsg = BuildRequestMessage(request);
-      var responseMsg = await _httpClient
-              .SendAsync(requestMsg, HttpCompletionOption.ResponseContentRead)
+      var responseMsg = await SendAction(requestMsg)
               .ConfigureAwait(false);
 
       return await BuildResponse(responseMsg).ConfigureAwait(false);

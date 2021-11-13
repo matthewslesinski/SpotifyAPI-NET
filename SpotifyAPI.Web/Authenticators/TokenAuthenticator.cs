@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using SpotifyAPI.Web.Http;
 
@@ -15,7 +16,7 @@ namespace SpotifyAPI.Web
 
     public string TokenType { get; set; }
 
-    public Task Apply(IRequest request, IAPIConnector apiConnector)
+    public Task Apply(IRequest request, IAPIConnector apiConnector, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(request, nameof(request));
 

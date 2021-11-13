@@ -10,11 +10,11 @@ namespace SpotifyAPI.Web.Http
   public class APIConnector : IAPIConnector
   {
     private readonly Uri _baseAddress;
-    private readonly IAuthenticator? _authenticator;
-    private readonly IJSONSerializer _jsonSerializer;
-    private readonly IHTTPClient _httpClient;
-    private readonly IRetryHandler? _retryHandler;
-    private readonly IHTTPLogger? _httpLogger;
+    protected readonly IAuthenticator? Authenticator;
+    protected readonly IJSONSerializer JsonSerializer;
+    protected readonly IHTTPClient HttpClient;
+    protected readonly IRetryHandler? RetryHandler;
+    protected readonly IHTTPLogger? HttpLogger;
 
     public event EventHandler<IResponse>? ResponseReceived;
 
@@ -30,11 +30,11 @@ namespace SpotifyAPI.Web.Http
       IHTTPLogger? httpLogger)
     {
       _baseAddress = baseAddress;
-      _authenticator = authenticator;
-      _jsonSerializer = jsonSerializer;
-      _httpClient = httpClient;
-      _retryHandler = retryHandler;
-      _httpLogger = httpLogger;
+      Authenticator = authenticator;
+      JsonSerializer = jsonSerializer;
+      HttpClient = httpClient;
+      RetryHandler = retryHandler;
+      HttpLogger = httpLogger;
     }
 
     public Task<T> Delete<T>(Uri uri, CancellationToken? cancellationToken = null)
@@ -163,7 +163,7 @@ namespace SpotifyAPI.Web.Http
 
     public void SetRequestTimeout(TimeSpan timeout)
     {
-      _httpClient.SetRequestTimeout(timeout);
+      HttpClient.SetRequestTimeout(timeout);
     }
 
     public Task<IResponse> SendRawRequest(
@@ -231,17 +231,17 @@ namespace SpotifyAPI.Web.Http
 
     private async Task<IAPIResponse<T>> DoSerializedRequest<T>(IRequest request, CancellationToken? cancellationToken)
     {
-      _jsonSerializer.SerializeRequest(request);
+      JsonSerializer.SerializeRequest(request);
       var response = await DoRequest(request, cancellationToken).ConfigureAwait(false);
-      return _jsonSerializer.DeserializeResponse<T>(response);
+      return JsonSerializer.DeserializeResponse<T>(response);
     }
 
     protected virtual async Task<IResponse> DoRequest(IRequest request, CancellationToken? cancellationToken)
     {
       var response = await SendRequest(request, cancellationToken).ConfigureAwait(false);
-      if (_retryHandler != null)
+      if (RetryHandler != null)
       {
-        response = await _retryHandler.HandleRetry(request, response, (newRequest) => SendRequest(request, cancellationToken)).ConfigureAwait(false);
+        response = await RetryHandler.HandleRetry(request, response, (newRequest) => SendRequest(request, cancellationToken)).ConfigureAwait(false);
       }
 
       ProcessErrors(response);
@@ -251,9 +251,9 @@ namespace SpotifyAPI.Web.Http
     private async Task<IResponse> SendRequest(IRequest request, CancellationToken? cancellationToken)
     {
       await ApplyAuthenticator(request, cancellationToken).ConfigureAwait(false);
-      _httpLogger?.OnRequest(request);
-      IResponse response = await _httpClient.DoRequest(request, cancellationToken).ConfigureAwait(false);
-      _httpLogger?.OnResponse(response);
+      HttpLogger?.OnRequest(request);
+      IResponse response = await HttpClient.DoRequest(request, cancellationToken).ConfigureAwait(false);
+      HttpLogger?.OnResponse(response);
       ResponseReceived?.Invoke(this, response);
       return response;
     }
@@ -261,16 +261,16 @@ namespace SpotifyAPI.Web.Http
     private async Task ApplyAuthenticator(IRequest request, CancellationToken? cancellationToken)
     {
 #if NETSTANDARD2_0
-      if (_authenticator != null
+      if (Authenticator != null
         && !request.Endpoint.IsAbsoluteUri
         || request.Endpoint.AbsoluteUri.Contains("https://api.spotify.com"))
 #else
-      if (_authenticator != null
+      if (Authenticator != null
         && !request.Endpoint.IsAbsoluteUri
         || request.Endpoint.AbsoluteUri.Contains("https://api.spotify.com", StringComparison.InvariantCulture))
 #endif
       {
-        await _authenticator!.Apply(request, this, cancellationToken).ConfigureAwait(false);
+        await Authenticator!.Apply(request, this, cancellationToken).ConfigureAwait(false);
       }
     }
 

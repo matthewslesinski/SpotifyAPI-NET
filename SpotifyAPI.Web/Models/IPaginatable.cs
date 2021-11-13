@@ -17,5 +17,14 @@ namespace SpotifyAPI.Web
 
     List<T>? Items { get; set; }
   }
+
+  public interface IFinitePaginatable
+  {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716")]
+    string? Next { get; set; }
+    int? Limit { get; set; }
+    int? Offset { get; set; }
+    int? Total { get; set; }
+  }
 }
 

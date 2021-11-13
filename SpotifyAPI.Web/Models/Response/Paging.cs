@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SpotifyAPI.Web
 {
-  public class Paging<T> : IPaginatable<T>
+  public class Paging<T> : IPaginatable<T>, IFinitePaginatable
   {
     public string? Href { get; set; } = default!;
     public List<T>? Items { get; set; } = default!;
@@ -13,7 +13,7 @@ namespace SpotifyAPI.Web
     public int? Total { get; set; } = default!;
   }
 
-  public class Paging<T, TNext> : IPaginatable<T, TNext>
+  public class Paging<T, TNext> : IPaginatable<T, TNext>, IFinitePaginatable
   {
     public string? Href { get; set; } = default!;
     public List<T>? Items { get; set; } = default!;

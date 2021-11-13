@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SpotifyAPI.Web.Http;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace SpotifyAPI.Web
 {
@@ -18,7 +19,7 @@ namespace SpotifyAPI.Web
       return Task.FromResult(true);
     }
 
-    public async Task<IList<T>> PaginateAll<T>(IPaginatable<T> firstPage, IAPIConnector connector)
+    public async Task<IList<T>> PaginateAll<T>(IPaginatable<T> firstPage, IAPIConnector connector, CancellationToken? cancellationToken = null)
     {
       Ensure.ArgumentNotNull(firstPage, nameof(firstPage));
       Ensure.ArgumentNotNull(connector, nameof(connector));
@@ -31,7 +32,7 @@ namespace SpotifyAPI.Web
       }
       while (page.Next != null && await ShouldContinue(results, page).ConfigureAwait(false))
       {
-        page = await connector.Get<Paging<T>>(new Uri(page.Next, UriKind.Absolute)).ConfigureAwait(false);
+        page = await connector.Get<Paging<T>>(new Uri(page.Next, UriKind.Absolute), cancellationToken).ConfigureAwait(false);
         if (page.Items != null)
         {
           results.AddRange(page.Items);
@@ -42,7 +43,7 @@ namespace SpotifyAPI.Web
     }
 
     public async Task<IList<T>> PaginateAll<T, TNext>(
-      IPaginatable<T, TNext> firstPage, Func<TNext, IPaginatable<T, TNext>> mapper, IAPIConnector connector
+      IPaginatable<T, TNext> firstPage, Func<TNext, IPaginatable<T, TNext>> mapper, IAPIConnector connector, CancellationToken? cancellationToken = null
     )
     {
       Ensure.ArgumentNotNull(firstPage, nameof(firstPage));
@@ -57,7 +58,7 @@ namespace SpotifyAPI.Web
       }
       while (page.Next != null && await ShouldContinue(results, page).ConfigureAwait(false))
       {
-        var next = await connector.Get<TNext>(new Uri(page.Next, UriKind.Absolute)).ConfigureAwait(false);
+        var next = await connector.Get<TNext>(new Uri(page.Next, UriKind.Absolute), cancellationToken).ConfigureAwait(false);
         page = mapper(next);
         if (page.Items != null)
         {
@@ -66,6 +67,36 @@ namespace SpotifyAPI.Web
       }
 
       return results;
+    }
+
+    public IEnumerable<Task<T>> PaginateConcurrently<T, TPaginatable>(TPaginatable firstPage, IAPIConnector connector, CancellationToken? cancellationToken = null)
+      where TPaginatable : IPaginatable<T>, IFinitePaginatable
+    {
+      Ensure.ArgumentNotNull(firstPage, nameof(firstPage));
+      Ensure.ArgumentNotNull(connector, nameof(connector));
+      if (!firstPage.Total.HasValue || !firstPage.Offset.HasValue)
+      {
+        throw new ArgumentException("The first page must indicate the total number of items and the starting offset in order to paginate concurrently.", nameof(firstPage));
+      }
+      var totalItems = firstPage.Total.Value - firstPage.Offset.Value;
+      var allItemsTask = PaginateAll(firstPage, connector, cancellationToken);
+      return Enumerable.Range(0, totalItems).Select(async index => (await allItemsTask.ConfigureAwait(false))[index]);
+    }
+
+    public IEnumerable<Task<T>> PaginateConcurrently<T, TNext, TPaginatable>(TPaginatable firstPage, Func<TNext, TPaginatable> mapper,
+      IAPIConnector connector, CancellationToken? cancellationToken = null)
+      where TPaginatable : IPaginatable<T, TNext>, IFinitePaginatable
+    {
+      Ensure.ArgumentNotNull(firstPage, nameof(firstPage));
+      Ensure.ArgumentNotNull(mapper, nameof(mapper));
+      Ensure.ArgumentNotNull(connector, nameof(connector));
+      if (!firstPage.Total.HasValue || !firstPage.Offset.HasValue)
+      {
+        throw new ArgumentException("The first page must indicate the total number of items and the starting offset in order to paginate concurrently.", nameof(firstPage));
+      }
+      var totalItems = firstPage.Total.Value - firstPage.Offset.Value;
+      var allItemsTask = PaginateAll(firstPage, tnext => mapper(tnext), connector, cancellationToken);
+      return Enumerable.Range(0, totalItems).Select(async index => (await allItemsTask.ConfigureAwait(false))[index]);
     }
 
 #if !NETSTANDARD2_0
@@ -88,7 +119,7 @@ namespace SpotifyAPI.Web
       }
       while (page.Next != null)
       {
-        page = await connector.Get<Paging<T>>(new Uri(page.Next, UriKind.Absolute)).ConfigureAwait(false);
+        page = await connector.Get<Paging<T>>(new Uri(page.Next, UriKind.Absolute), cancel).ConfigureAwait(false);
         foreach (var item in page.Items!)
         {
           yield return item;
@@ -117,7 +148,7 @@ namespace SpotifyAPI.Web
       }
       while (page.Next != null)
       {
-        var next = await connector.Get<TNext>(new Uri(page.Next, UriKind.Absolute)).ConfigureAwait(false);
+        var next = await connector.Get<TNext>(new Uri(page.Next, UriKind.Absolute), cancel).ConfigureAwait(false);
         page = mapper(next);
         foreach (var item in page.Items!)
         {

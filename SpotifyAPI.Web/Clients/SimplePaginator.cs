@@ -99,7 +99,6 @@ namespace SpotifyAPI.Web
       return Enumerable.Range(0, totalItems).Select(async index => (await allItemsTask.ConfigureAwait(false))[index]);
     }
 
-#if !NETSTANDARD2_0
     public async IAsyncEnumerable<T> Paginate<T>(
       IPaginatable<T> firstPage,
       IAPIConnector connector,
@@ -156,6 +155,5 @@ namespace SpotifyAPI.Web
         }
       }
     }
-#endif
   }
 }

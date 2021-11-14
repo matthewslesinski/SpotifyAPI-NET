@@ -74,7 +74,6 @@ namespace SpotifyAPI.Web
       CancellationToken? cancellationToken = null
     ) where TPaginatable : IPaginatable<T, TNext>, IFinitePaginatable;
 
-#if !NETSTANDARD2_0
     /// <summary>
     /// Fetches all pages and returns one by one using IAsyncEnumerable
     /// </summary>
@@ -104,6 +103,5 @@ namespace SpotifyAPI.Web
       IAPIConnector connector,
       CancellationToken cancel = default
     );
-#endif
   }
 }

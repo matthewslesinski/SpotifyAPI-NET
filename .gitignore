@@ -118,3 +118,4 @@ UpgradeLog*.XML
 SpotifyAPI.Web.Tests/UtilTests/Test.cs
 
 launchSettings.json
+SpotifyAPIBinaries

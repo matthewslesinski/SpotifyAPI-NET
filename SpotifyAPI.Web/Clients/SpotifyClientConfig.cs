@@ -1,9 +1,11 @@
-using System.Net.Http;
 using System;
 using SpotifyAPI.Web.Http;
 
 namespace SpotifyAPI.Web
 {
+  public delegate IAPIConnector APIConnectorConstructor(Uri baseAddress, IAuthenticator? authenticator,
+    IJSONSerializer jsonSerializer, IHTTPClient httpClient, IRetryHandler? retryHandler, IHTTPLogger? httpLogger);
+
   public class SpotifyClientConfig
   {
     public Uri BaseAddress { get; private set; }
@@ -13,7 +15,7 @@ namespace SpotifyAPI.Web
     public IHTTPLogger? HTTPLogger { get; private set; }
     public IRetryHandler? RetryHandler { get; private set; }
     public IPaginator DefaultPaginator { get; private set; }
-    public IAPIConnector? APIConnector { get; private set; }
+    public APIConnectorConstructor APIConnectorBuilder { get; private set; }
 
     /// <summary>
     ///   This config spefies the internal parts of the SpotifyClient.
@@ -25,7 +27,7 @@ namespace SpotifyAPI.Web
     /// <param name="retryHandler"></param>
     /// <param name="httpLogger"></param>
     /// <param name="defaultPaginator"></param>
-    /// <param name="apiConnector"></param>
+    /// <param name="apiConnectorConstructor"></param>
     public SpotifyClientConfig(
       Uri baseAddress,
       IAuthenticator? authenticator,
@@ -34,7 +36,7 @@ namespace SpotifyAPI.Web
       IRetryHandler? retryHandler,
       IHTTPLogger? httpLogger,
       IPaginator defaultPaginator,
-      IAPIConnector? apiConnector = null
+      APIConnectorConstructor apiConnectorConstructor
     )
     {
       BaseAddress = baseAddress;
@@ -44,7 +46,7 @@ namespace SpotifyAPI.Web
       RetryHandler = retryHandler;
       HTTPLogger = httpLogger;
       DefaultPaginator = defaultPaginator;
-      APIConnector = apiConnector;
+      APIConnectorBuilder = apiConnectorConstructor;
     }
 
     public SpotifyClientConfig WithToken(string token, string tokenType = "Bearer")
@@ -58,7 +60,8 @@ namespace SpotifyAPI.Web
         HTTPClient,
         RetryHandler,
         HTTPLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -71,7 +74,8 @@ namespace SpotifyAPI.Web
         HTTPClient,
         retryHandler,
         HTTPLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -86,7 +90,8 @@ namespace SpotifyAPI.Web
         HTTPClient,
         RetryHandler,
         HTTPLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -99,7 +104,8 @@ namespace SpotifyAPI.Web
         HTTPClient,
         RetryHandler,
         httpLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -114,7 +120,8 @@ namespace SpotifyAPI.Web
         httpClient,
         RetryHandler,
         HTTPLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -129,7 +136,8 @@ namespace SpotifyAPI.Web
         HTTPClient,
         RetryHandler,
         HTTPLogger,
-        DefaultPaginator
+        DefaultPaginator,
+        APIConnectorBuilder
       );
     }
 
@@ -145,13 +153,20 @@ namespace SpotifyAPI.Web
         HTTPClient,
         RetryHandler,
         HTTPLogger,
-        defaultPaginator
+        defaultPaginator,
+        APIConnectorBuilder
       );
     }
 
     public SpotifyClientConfig WithAPIConnector(IAPIConnector apiConnector)
     {
       Ensure.ArgumentNotNull(apiConnector, nameof(apiConnector));
+      return WithAPIConnectorConstructor((_, _, _, _, _, _) => apiConnector);
+    }
+
+    public SpotifyClientConfig WithAPIConnectorConstructor(APIConnectorConstructor apiConnectorConstructor)
+    {
+      Ensure.ArgumentNotNull(apiConnectorConstructor, nameof(apiConnectorConstructor));
 
       return new SpotifyClientConfig(
         BaseAddress,
@@ -161,13 +176,13 @@ namespace SpotifyAPI.Web
         RetryHandler,
         HTTPLogger,
         DefaultPaginator,
-        apiConnector
+        apiConnectorConstructor
       );
     }
 
     public IAPIConnector BuildAPIConnector()
     {
-      return APIConnector ?? new APIConnector(
+      return APIConnectorBuilder(
         BaseAddress,
         Authenticator,
         JSONSerializer,
@@ -184,6 +199,19 @@ namespace SpotifyAPI.Web
 
     public static SpotifyClientConfig CreateDefault()
     {
+      static IAPIConnector BuildDefaultAPIConnector(Uri baseAddress, IAuthenticator? authenticator,
+        IJSONSerializer jsonSerializer, IHTTPClient httpClient, IRetryHandler? retryHandler, IHTTPLogger? httpLogger)
+      {
+        return new APIConnector(
+          baseAddress,
+          authenticator,
+          jsonSerializer,
+          httpClient,
+          retryHandler,
+          httpLogger
+        );
+      }
+
       return new SpotifyClientConfig(
         SpotifyUrls.APIV1,
         null,
@@ -191,7 +219,8 @@ namespace SpotifyAPI.Web
         new NetHttpClient(),
         null,
         null,
-        new SimplePaginator()
+        new SimplePaginator(),
+        BuildDefaultAPIConnector
       );
     }
   }

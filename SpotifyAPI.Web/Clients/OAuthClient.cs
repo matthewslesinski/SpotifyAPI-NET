@@ -74,7 +74,7 @@ namespace SpotifyAPI.Web
     }
 
     /// <summary>
-    /// Reequest an initial token via Authorization Code Auth
+    /// Request an initial token via Authorization Code Auth
     /// </summary>
     /// <param name="request">The request-model which contains required and optional parameters.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the request.</param>

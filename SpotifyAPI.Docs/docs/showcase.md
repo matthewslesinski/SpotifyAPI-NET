@@ -25,7 +25,7 @@ Send a PR via the "Edit this page" link at the end of the page!
 
 > A cross-platform CLI Tool for requesting the Spotify Web API, with a focus on automation. 
 
-### [audio-band](https://github.com/dsafa/audio-band) by [@dsafa](https://github.com/dsafa)
+### [AudioBand](https://github.com/AudioBand/AudioBand) by [@dsafa](https://github.com/dsafa) and [@svr333](https://github.com/svr333)
 
 > Display and control songs from the Windows taskbar
 
@@ -91,3 +91,10 @@ Send a PR via the "Edit this page" link at the end of the page!
 ### [Spotify Song Availability Checker](https://github.com/CasualHonest/SpotifySongAvailabilityChecker) by [@CasualHonest](https://github.com/CasualHonest/)
 
 > Spotify Song Availability Checker (SSAC) is a simple and lightweight tool that lets you check the availability of songs and albums on Spotify, giving you basic information about what you enter and displaying the available markets for said entry.
+
+### [ConcertBuddy](https://github.com/skuill/ConcertBuddy) by [@skuill](https://github.com/skuill)
+
+> Telegram bot that can find the latest setlists of an artist or band, listen to tracks and show lyrics.
+
+### [SpotifiCLI](https://github.com/kollibroman/SpotifyCLI) by [@kollibroman](https://github.com/kollibroman)
+> Another cross-platform cli tool to interact with spotify api with focus on simplicity
